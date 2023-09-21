@@ -1,0 +1,7 @@
+CREATE TABLE clothes (id INTEGER PRIMARY KEY, name text, price INTEGER, quantity text);
+INSERT INTO clothes VALUES (1, "Hello", 89, 8);
+INSERT INTO clothes VALUES (2, "Deaftones", 101, 9);
+INSERT INTO clothes VALUES (3, "Starpants", 35, 33);
+INSERT INTO clothes VALUES (4, "Nirvanashirt", 76, 7);
+SELECT quantity, SUM(price) FROM clothes
+GROUP BY quantity
