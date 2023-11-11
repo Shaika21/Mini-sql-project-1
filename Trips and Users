@@ -1,3 +1,38 @@
 --Write a solution to find the cancellation rate of requests with unbanned users (both client and driver must not be banned) each day between "2013-10-01" and "2013-10-03". Round Cancellation Rate to two decimal points.
 
 --Return the result table in any order.
+
+-- trim the trips table to have required data.
+-- get the total request per day.
+-- get the cancelled requests per day.
+
+WITH data AS (
+    SELECT request_at, status
+    FROM trips t
+    WHERE EXISTS (
+        SELECT 1
+        FROM users u
+        WHERE u.banned = 'No' AND u.users_id = t.client_id
+    )
+    AND EXISTS (
+        SELECT 1
+        FROM users u
+        WHERE u.banned = 'No' AND u.users_id = t.driver_id
+    )
+    AND TO_DATE(t.request_at, 'yyyy-mm-dd') BETWEEN TO_DATE('2013-10-01', 'yyyy-mm-dd') AND TO_DATE('2013-10-03', 'yyyy-mm-dd')
+),
+total_requests AS (
+    SELECT request_at, COUNT(1) AS number_of_requests
+    FROM data
+    GROUP BY request_at
+),
+total_cancels AS (
+    SELECT request_at, COUNT(1) AS number_of_cancels
+    FROM data
+    WHERE status IN ('cancelled_by_driver', 'cancelled_by_client')
+    GROUP BY request_at
+)
+SELECT tr.request_at AS Day,
+    ROUND(COALESCE(tc.number_of_cancels, 0) / tr.number_of_requests, 2) AS "Cancellation Rate"
+FROM total_requests tr
+LEFT JOIN total_cancels tc ON tr.request_at = tc.request_at;
