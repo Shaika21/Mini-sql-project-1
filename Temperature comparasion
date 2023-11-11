@@ -1,0 +1,6 @@
+/*Write a solution to find all dates' Id with higher temperatures compared to its previous dates (yesterday). Return the result table in any order. */
+SELECT w2.id
+FROM weather w1 -- previous day
+JOIN weather w2 --current day
+    ON dateadd(day, -1, w2.recordDate) = w1.recordDate
+    AND w2.temperature > w1.temperature;
